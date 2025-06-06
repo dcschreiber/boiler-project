@@ -29,8 +29,8 @@ A production-ready SaaS starter kit with React, FastAPI, Supabase, and Google Cl
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/saas-boilerplate.git
-cd saas-boilerplate
+git clone https://github.com/dcschreiber/boiler-project.git
+cd boiler-project
 
 # Install dependencies
 npm install
