@@ -1,0 +1,147 @@
+{
+  "app": {
+    "name": "SaaS Boilerplate",
+    "tagline": "Build your SaaS faster"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "admin": "Admin",
+    "logout": "Logout",
+    "login": "Login",
+    "signup": "Sign up"
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "signupTitle": "Create your account",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "forgotPassword": "Forgot password?",
+    "rememberMe": "Remember me",
+    "loginButton": "Sign in",
+    "signupButton": "Create account",
+    "googleLogin": "Continue with Google",
+    "alreadyHaveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?",
+    "passwordReset": "Password reset",
+    "passwordResetDescription": "Enter your email and we'll send you a link to reset your password.",
+    "sendResetLink": "Send reset link",
+    "backToLogin": "Back to login",
+    "resetLinkSent": "Check your email for a password reset link",
+    "invalidCredentials": "Invalid email or password",
+    "accountCreated": "Account created successfully",
+    "loggedOut": "You have been logged out"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back, {{name}}!",
+    "stats": {
+      "users": "Total Users",
+      "newUsers": "New Users",
+      "activeUsers": "Active Users"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "personalInfo": "Personal Information",
+    "name": "Name",
+    "email": "Email",
+    "language": "Language",
+    "updateButton": "Update profile",
+    "updateSuccess": "Profile updated successfully",
+    "deleteAccount": "Delete Account",
+    "deleteAccountWarning": "This action cannot be undone. All your data will be permanently deleted."
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "users": {
+      "title": "User Management",
+      "search": "Search users...",
+      "filter": "Filter by role",
+      "export": "Export to CSV",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "createdAt": "Created",
+        "actions": "Actions"
+      },
+      "makeAdmin": "Make admin",
+      "removeAdmin": "Remove admin",
+      "deleteUser": "Delete user",
+      "confirmDelete": "Are you sure you want to delete this user? This action cannot be undone."
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "newThisWeek": "New This Week",
+      "newThisMonth": "New This Month",
+      "activeToday": "Active Today"
+    },
+    "analytics": "View Analytics"
+  },
+  "billing": {
+    "title": "Billing",
+    "currentPlan": "Current Plan",
+    "free": "Free",
+    "premium": "Premium",
+    "subscribe": "Upgrade to Premium",
+    "manage": "Manage Subscription",
+    "features": {
+      "free": [
+        "Basic features",
+        "Up to 10 projects",
+        "Community support"
+      ],
+      "premium": [
+        "All features",
+        "Unlimited projects",
+        "Priority support",
+        "Advanced analytics"
+      ]
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Info"
+  },
+  "footer": {
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact Us",
+    "copyright": "© {{year}} {{company}}. All rights reserved."
+  },
+  "cookies": {
+    "title": "We use cookies",
+    "description": "We use cookies to improve your experience and analyze site usage.",
+    "accept": "Accept all",
+    "decline": "Decline",
+    "manage": "Manage preferences"
+  },
+  "errors": {
+    "404": "Page not found",
+    "403": "Access denied",
+    "500": "Internal server error",
+    "generic": "Something went wrong",
+    "networkError": "Network error. Please check your connection.",
+    "validationError": "Please check your input and try again."
+  }
+}
