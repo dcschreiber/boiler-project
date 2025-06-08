@@ -7,11 +7,11 @@ router = APIRouter()
 
 
 @router.post("/login", response_model=Token)
-async def login(credentials: Login, db = Depends(get_db)):
+def login(credentials: Login, db = Depends(get_db)):
     """Login with email and password"""
     try:
         # Authenticate with Supabase
-        response = await db.auth.sign_in_with_password({
+        response = db.auth.sign_in_with_password({
             "email": credentials.email,
             "password": credentials.password
         })
@@ -32,21 +32,26 @@ async def login(credentials: Login, db = Depends(get_db)):
 
 
 @router.post("/signup", response_model=Token)
-async def signup(credentials: Login, db = Depends(get_db)):
+def signup(credentials: Login, db = Depends(get_db)):
     """Create new account"""
     try:
         # Check whitelist mode
         if settings.WHITELIST_MODE:
-            # Check if user is in whitelist
-            whitelist = await db.table("whitelist").select("*").eq("email", credentials.email).execute()
-            if not whitelist.data:
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Registration is by invitation only"
-                )
+            try:
+                # Check if user is in whitelist
+                whitelist = db.table("whitelist").select("*").eq("email", credentials.email).execute()
+                if not whitelist.data:
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="Registration is by invitation only"
+                    )
+            except Exception as e:
+                # If whitelist table doesn't exist, allow registration
+                print(f"Whitelist table not found, allowing registration: {e}")
+                pass
         
         # Create user with Supabase
-        response = await db.auth.sign_up({
+        response = db.auth.sign_up({
             "email": credentials.email,
             "password": credentials.password
         })
@@ -57,15 +62,21 @@ async def signup(credentials: Login, db = Depends(get_db)):
                 detail="Failed to create account"
             )
         
-        # Create profile
-        await db.table("profiles").insert({
-            "id": response.user.id,
-            "email": credentials.email,
-            "is_admin": credentials.email == settings.ADMIN_EMAIL
-        }).execute()
+        # Create profile (optional, ignore if table doesn't exist)
+        try:
+            db.table("profiles").insert({
+                "id": response.user.id,
+                "email": credentials.email,
+                "is_admin": credentials.email == settings.ADMIN_EMAIL
+            }).execute()
+        except Exception as profile_error:
+            print(f"Profile creation failed (table may not exist): {profile_error}")
+        
+        # Handle case where session might be None (email confirmation required)
+        access_token = response.session.access_token if response.session else None
         
         return Token(
-            access_token=response.session.access_token,
+            access_token=access_token,
             user={
                 "id": response.user.id,
                 "email": response.user.email,
@@ -82,10 +93,10 @@ async def signup(credentials: Login, db = Depends(get_db)):
 
 
 @router.post("/reset-password")
-async def reset_password(data: PasswordReset, db = Depends(get_db)):
+def reset_password(data: PasswordReset, db = Depends(get_db)):
     """Send password reset email"""
     try:
-        await db.auth.reset_password_for_email(
+        db.auth.reset_password_for_email(
             data.email,
             {
                 "redirect_to": f"{settings.APP_URL}/reset-password"
@@ -98,10 +109,10 @@ async def reset_password(data: PasswordReset, db = Depends(get_db)):
 
 
 @router.post("/logout")
-async def logout(db = Depends(get_db)):
+def logout(db = Depends(get_db)):
     """Logout current user"""
     try:
-        await db.auth.sign_out()
+        db.auth.sign_out()
         return {"message": "Logged out successfully"}
     except Exception:
         return {"message": "Logged out successfully"}

@@ -1,6 +1,6 @@
 from typing import List, Optional
 from pydantic_settings import BaseSettings
-from pydantic import AnyHttpUrl, validator
+from pydantic import AnyHttpUrl, field_validator
 
 
 class Settings(BaseSettings):
@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     SUPABASE_ANON_KEY: str
     SUPABASE_SERVICE_KEY: str
     
+    GOOGLE_CLIENT_ID: str
+    GOOGLE_CLIENT_SECRET: str
+    
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION_HOURS: int = 24
@@ -22,14 +25,12 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: str
     WHITELIST_MODE: bool = False
     
-    CORS_ORIGINS: List[str] = []
+    CORS_ORIGINS: str = ""
     
-    @validator("CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: str | List[str]) -> List[str]:
-        if isinstance(v, str) and v:
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, list):
-            return v
+    @property
+    def cors_origins_list(self) -> List[str]:
+        if self.CORS_ORIGINS:
+            return [i.strip() for i in self.CORS_ORIGINS.split(",")]
         return []
     
     STRIPE_ENABLED: bool = False

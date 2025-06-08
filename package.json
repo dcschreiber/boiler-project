@@ -18,7 +18,9 @@
     "test:e2e": "playwright test",
     "lint": "npm run lint --workspace=frontend && cd backend && ruff check .",
     "format": "npm run format --workspace=frontend && cd backend && black .",
-    "setup": "node scripts/setup.js",
+    "setup": "node scripts/setup-enhanced.js",
+    "setup:basic": "node scripts/setup.js",
+    "setup:prerequisites": "bash scripts/install-prerequisites.sh",
     "validate-env": "node scripts/validate-env.js",
     "postinstall": "node scripts/post-install.js",
     "prepare": "husky install"

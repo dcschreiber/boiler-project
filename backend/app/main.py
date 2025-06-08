@@ -14,7 +14,7 @@ from app.core.database import init_db
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db()
+    init_db()
     yield
 
 
@@ -41,7 +41,7 @@ def create_app() -> FastAPI:
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.CORS_ORIGINS,
+        allow_origins=settings.cors_origins_list,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

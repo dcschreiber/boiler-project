@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from typing import Dict
+from typing import Dict, Any
 from app.core.database import get_db
 
 router = APIRouter()

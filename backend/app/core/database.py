@@ -7,19 +7,22 @@ Base = declarative_base()
 
 supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
 
-async def init_db():
+def init_db():
     """Initialize database tables and admin user"""
     try:
         # Check if admin user exists
-        result = await supabase.auth.admin.list_users()
+        result = supabase.auth.admin.list_users()
+        
+        # Handle different response formats
+        users_list = result.users if hasattr(result, 'users') else result
         admin_exists = any(
-            user.email == settings.ADMIN_EMAIL for user in result.users
+            getattr(user, 'email', None) == settings.ADMIN_EMAIL for user in users_list
         )
         
         if not admin_exists and settings.ADMIN_EMAIL:
             # Create admin user with temporary password
             temp_password = "ChangeMeNow123!"
-            await supabase.auth.admin.create_user({
+            supabase.auth.admin.create_user({
                 "email": settings.ADMIN_EMAIL,
                 "password": temp_password,
                 "email_confirm": True,

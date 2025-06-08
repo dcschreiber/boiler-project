@@ -1,7 +1,7 @@
 # 🚀 Welcome to Your SaaS Setup Wizard!
 
-> **Time Required**: 15-20 minutes  
-> **Difficulty**: Easy (just copy & paste!)
+> **Time Required**: 10-15 minutes  
+> **Difficulty**: Easy (mostly automated!)
 
 You're about to set up a production-ready SaaS application. This guide will walk you through each step with clear instructions. Let's make this magical! ✨
 
@@ -10,15 +10,40 @@ You're about to set up a production-ready SaaS application. This guide will walk
 ## 📋 What You'll Need
 
 Before we start, make sure you have:
-- ✅ A Google account (for OAuth)
 - ✅ An email address for your admin account
-- ✅ 15 minutes to work
+- ✅ 10-15 minutes of focused time
+
+> **Note**: Node.js, Docker, and Python will be automatically installed if needed!
 
 ---
 
 ## 🎯 Step-by-Step Setup
 
-### Step 1: Create Your Supabase Project (5 minutes)
+
+### Step 1: Run the Setup Script (1 minute)
+
+Our smart setup script will handle everything for you!
+
+```bash
+npm run setup
+```
+
+The enhanced setup script will:
+- ✅ Check for Node.js, Docker, and Python (install if missing)
+- ✅ Create `.env.local` from `.env.example` template
+- ✅ Auto-generate a secure JWT secret
+- ✅ Set up environment files for frontend and backend
+- ✅ Configure Git hooks for code quality
+
+
+If you need to install prerequisites first, run:
+```bash
+npm run setup:prerequisites
+```
+
+---
+
+### Step 2: Create Your Supabase Project (5 minutes)
 
 Supabase will handle your database, authentication, and real-time features - all for free!
 
@@ -36,115 +61,90 @@ Supabase will handle your database, authentication, and real-time features - all
 
 5. **Copy your keys** (you'll need these in Step 4):
    - Click "Settings" (gear icon) → "API"
-   - You'll see:
+   - Under "Project API keys" you'll see:
      - `Project URL` → Copy this
-     - `anon public` key → Copy this
-     - `service_role secret` key → Copy this (keep it secret!)
+     - `anon public` key → Copy this (under "Project API keys")
+     - `service_role` key → Copy this (also under "Project API keys" - keep it secret!)
 
 ---
 
-### Step 2: Set Up Google OAuth (5 minutes)
+### Step 3: Set Up Google OAuth (5-7 minutes)
 
 Let your users sign in with their Google accounts!
 
 1. **Go to [Google Cloud Console](https://console.cloud.google.com/)**
 
 2. **Create a new project** (or select existing):
-   - Click the dropdown at the top
+   - Click the project dropdown at the top
    - Click "New Project"
    - Name it (e.g., "My SaaS App")
-   - Click "Create"
+   - Click "Create" and wait for it to be ready
 
-3. **Enable Google OAuth**:
-   - In the search bar, type "OAuth consent"
-   - Click "OAuth consent screen"
-   - Choose "External" and click "Create"
-   - Fill in:
+3. **Configure OAuth Consent Screen**:
+   - In the navigation menu (☰), go to "APIs & Services" → "OAuth consent screen"
+   - Choose "External" user type and click "Create"
+   - Fill in the required fields:
      - **App name**: Your app name
      - **User support email**: Your email
-     - **Developer contact**: Your email
-   - Click "Save and Continue" (skip optional fields)
+     - **App logo**: Optional (skip for now)
+     - **App domain**: Skip for development
+     - **Developer contact email**: Your email
+   - Click "Save and Continue"
+   - On "Scopes" page, click "Save and Continue" (no changes needed)
+   - On "Test users" page, click "Save and Continue" (optional)
+   - Review and click "Back to Dashboard"
 
-4. **Create OAuth credentials**:
-   - Go to "Credentials" (left sidebar)
-   - Click "Create Credentials" → "OAuth client ID"
-   - Choose "Web application"
-   - Add these **Authorized redirect URIs**:
+4. **Create OAuth 2.0 Credentials**:
+   - Go to "APIs & Services" → "Credentials"
+   - Click "+ Create Credentials" → "OAuth client ID"
+   - **Application type**: Select "Web application"
+   - **Name**: Enter "Web Client" or similar
+   - **Authorized JavaScript origins**:
+     ```
+     http://localhost:5173
+     http://localhost:3000
+     ```
+   - **Authorized redirect URIs**:
      ```
      http://localhost:5173/auth/callback
-     https://YOUR-PROJECT.supabase.co/auth/v1/callback
+     https://YOUR-PROJECT-REF.supabase.co/auth/v1/callback
      ```
-     (Replace YOUR-PROJECT with your Supabase project ID)
+     (Replace YOUR-PROJECT-REF with your Supabase project reference ID from Settings → General)
    - Click "Create"
 
-5. **Copy your credentials**:
-   - `Client ID` → Copy this
-   - `Client secret` → Copy this
+5. **Save your credentials**:
+   - A popup will show your credentials
+   - **Client ID**: Copy and save this
+   - **Client secret**: Copy and save this (keep it secure!)
+   - Click "OK"
 
 6. **Configure Supabase**:
    - Go back to your Supabase dashboard
    - Navigate to "Authentication" → "Providers"
-   - Enable "Google"
-   - Paste your Client ID and Client Secret
+   - Find "Google" and click "Enable"
+   - Paste your:
+     - **Client ID** (from step 5)
+     - **Client Secret** (from step 5)
+   - **Skip URL configuration** is typically off
    - Click "Save"
 
----
+7. **Important for Production**:
+   - When going live, add your production domain to the OAuth credentials
+   - Change OAuth consent screen from "Testing" to "Published"
+   - Add your domain verification if required
 
-### Step 3: Create Your Configuration File (2 minutes)
-
-Now let's put all those keys in one place!
-
-1. **Create a file called `.env.local`** in the project root
-
-2. **Copy and paste this template**:
-```env
-# Supabase Configuration (from Step 1)
-SUPABASE_URL=your_project_url_here
-SUPABASE_ANON_KEY=your_anon_key_here
-SUPABASE_SERVICE_KEY=your_service_key_here
-
-# Google OAuth (from Step 2)
-GOOGLE_CLIENT_ID=your_google_client_id_here
-GOOGLE_CLIENT_SECRET=your_google_client_secret_here
-
-# Admin Configuration
-ADMIN_EMAIL=your@email.com
-WHITELIST_MODE=false
-
-# Security (generate a random string)
-JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
-
-# Application
-APP_NAME=My Awesome SaaS
-CORS_ORIGINS=http://localhost:5173,http://localhost:3000
-```
-
-3. **Fill in your values**:
-   - Replace each `your_xxx_here` with the actual values you copied
-   - Set `ADMIN_EMAIL` to your email address
-   - For `JWT_SECRET`, use a password generator to create a 32+ character string
 
 ---
 
-### Step 4: Run the Magic Setup Script (1 minute)
+### Step 4: Start Your App! 🎉
 
-Almost done! Let's verify everything is configured correctly:
+Make sure you added all the details to the .env.local file.
 
-```bash
-npm run setup
-```
+> **🔑 Admin Account Info**: When you start the app for the first time, an admin account will be automatically created using:
+> - **Email**: The email you set as `ADMIN_EMAIL` in `.env.local`
+> - **Password**: `ChangeMeNow123!` (temporary password - change it immediately!)
 
-This script will:
-- ✅ Check all your environment variables
-- ✅ Create necessary configuration files
-- ✅ Set up your database
-- ✅ Configure Git hooks for code quality
-
-If you see any errors, double-check your `.env.local` file.
-
----
-
-### Step 5: Start Your App! 🎉
+Then run:
 
 ```bash
 npm run dev
@@ -157,8 +157,57 @@ Your app is now running at:
 
 **First steps**:
 1. Visit http://localhost:5173
-2. Click "Sign up" and use your admin email
+2. **Use the pre-created admin account to login**:
+   - **Email**: The email you set as `ADMIN_EMAIL` in `.env.local`
+   - **Password**: `ChangeMeNow123!` (temporary password - change it immediately!)
 3. You're now the admin! 👑
+4. **Important**: Change your admin password immediately after first login
+
+> **Note**: The admin account is automatically created when you first start the app. The temporary password `ChangeMeNow123!` should be changed immediately for security.
+
+---
+
+## 📊 Optional: Set Up Error Monitoring with Sentry (5 minutes)
+
+Track errors and performance issues in your production app!
+
+1. **Create a Sentry account** at [sentry.io](https://sentry.io)
+
+2. **Create a new project**:
+   - Click \"Create Project\"
+   - **Platform**: Choose \"React\" for frontend monitoring
+   - **Alert frequency**: Keep default
+   - **Project name**: Your app name
+   - **Team**: Select or create team
+   - Click \"Create Project\"
+
+3. **Get your DSN**:
+   - After project creation, you'll see your DSN
+   - It looks like: `https://abc123@o123456.ingest.sentry.io/1234567`
+   - Copy this DSN
+
+4. **Optional: Add backend monitoring**:
+   - Create another project for \"Python\" (FastAPI)
+   - Get a separate DSN for backend
+   - This allows you to track frontend and backend errors separately
+
+5. **Update `.env.local`**:
+   ```env
+   # For combined frontend/backend monitoring
+   SENTRY_DSN=https://your-dsn-here@sentry.io/project-id
+   
+   # OR for separate monitoring (recommended)
+   VITE_SENTRY_DSN=https://frontend-dsn@sentry.io/frontend-id
+   SENTRY_DSN=https://backend-dsn@sentry.io/backend-id
+   
+   # Optional: Performance monitoring sample rate (0.0 to 1.0)
+   SENTRY_TRACES_SAMPLE_RATE=0.1
+   ```
+
+6. **Configure alerts** (optional):
+   - Go to \"Alerts\" → \"Create Alert Rule\"
+   - Set up notifications for critical errors
+   - Configure performance monitoring thresholds
 
 ---
 
@@ -216,16 +265,41 @@ Want to charge for your SaaS? Here's how:
    STRIPE_ENABLED=true
    STRIPE_PUBLISHABLE_KEY=pk_test_xxx
    STRIPE_SECRET_KEY=sk_test_xxx
-   STRIPE_WEBHOOK_SECRET=whsec_xxx
+   STRIPE_WEBHOOK_SECRET=whsec_xxx  # From step 5 below
    STRIPE_PRICE_ID_MONTHLY=price_xxx
    STRIPE_PRICE_ID_YEARLY=price_xxx
    ```
 
 5. **Set up webhooks**:
-   - In Stripe Dashboard → "Webhooks"
-   - Add endpoint: `https://your-domain.com/api/billing/webhook`
-   - Select events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
-   - Copy the webhook secret
+   - In Stripe Dashboard → "Developers" → "Webhooks"
+   - Click "Add endpoint"
+   - **Endpoint URL**: 
+     - For local testing: Use [Stripe CLI](https://stripe.com/docs/stripe-cli) or [ngrok](https://ngrok.com)
+     - For production: `https://your-domain.com/api/billing/webhook`
+   - **Events to send**: Click "+ Select events"
+     - Under "Checkout", select:
+       - `checkout.session.completed` ✓
+     - Under "Customer", select:
+       - `customer.subscription.created` ✓
+       - `customer.subscription.updated` ✓
+       - `customer.subscription.deleted` ✓
+   - Click "Add endpoint"
+   - **Copy the Signing secret** (starts with `whsec_`)
+   - This is your `STRIPE_WEBHOOK_SECRET`
+
+6. **For local development**:
+   ```bash
+   # Install Stripe CLI
+   brew install stripe/stripe-cli/stripe  # macOS
+   # or download from https://stripe.com/docs/stripe-cli
+   
+   # Login to Stripe
+   stripe login
+   
+   # Forward webhooks to your local server
+   stripe listen --forward-to localhost:8000/api/billing/webhook
+   # Copy the webhook signing secret it shows you
+   ```
 
 ---
 
@@ -249,12 +323,22 @@ Ready to go live? Here's how to use your own domain:
 
 ---
 
-## 🚨 Troubleshooting
+### Prerequisites missing
+- Run `npm run setup:prerequisites` to auto-install Node.js, Docker, and Python
+- The script uses nvm for Node.js and pyenv for Python version management
+- Docker Desktop will be installed automatically (manual step on macOS)
+
+### Docker not running
+- The setup script will try to start Docker automatically
+- If issues persist, restart Docker Desktop manually
+
+## 🚨 Common Issues & Solutions
 
 ### "Missing environment variables" error
-- Double-check your `.env.local` file
-- Make sure there are no extra spaces or quotes
-- Run `npm run validate-env` to see what's missing
+- Double-check your `.env.local` file exists in the project root
+- Make sure there are no extra spaces or quotes around values
+- Environment variables should not be wrapped in quotes
+- Run `npm run validate-env` to see exactly what's missing
 
 ### "Cannot connect to Supabase"
 - Verify your Supabase project is active
@@ -262,9 +346,11 @@ Ready to go live? Here's how to use your own domain:
 - Try regenerating the service key if needed
 
 ### Google sign-in not working
-- Ensure redirect URIs match exactly
+- Ensure redirect URIs match exactly (including http vs https)
 - Check that Google provider is enabled in Supabase
-- Verify your Google OAuth app is published (not in test mode)
+- Verify your Google OAuth app is not in "Testing" mode
+- Make sure you've saved the credentials in Supabase
+- Check browser console for specific error messages
 
 ---
 
