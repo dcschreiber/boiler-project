@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import chalk from 'chalk';
 import ora from 'ora';
 import { config } from 'dotenv';
+import { execSync } from 'child_process';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
@@ -86,6 +87,63 @@ SENTRY_DSN=${process.env.SENTRY_DSN || ''}
   spinner.succeed('Environment files created');
 }
 
+async function setupDatabase() {
+  const spinner = ora('Setting up database...').start();
+  
+  try {
+    // Check if Python and required packages are available
+    try {
+      execSync('python3 --version', { stdio: 'pipe' });
+    } catch {
+      spinner.fail('Python 3 is required for database setup');
+      console.log(chalk.yellow('Please install Python 3 and run the setup again'));
+      return false;
+    }
+
+    // Install required Python packages
+    spinner.text = 'Installing Python dependencies...';
+    try {
+      execSync('pip install supabase python-dotenv requests', { 
+        stdio: 'pipe',
+        cwd: rootDir 
+      });
+    } catch (error) {
+      spinner.warn('Could not install Python packages automatically');
+      console.log(chalk.yellow('Please run: pip install supabase python-dotenv requests'));
+    }
+
+    // Run database setup
+    spinner.text = 'Setting up database tables...';
+    try {
+      const setupOutput = execSync('python3 scripts/setup-database.py', { 
+        cwd: rootDir,
+        encoding: 'utf8'
+      });
+      
+      if (setupOutput.includes('✅ Database setup completed successfully')) {
+        spinner.succeed('Database setup completed');
+        return true;
+      } else {
+        spinner.warn('Database setup needs manual intervention');
+        console.log(chalk.yellow('\nDatabase setup output:'));
+        console.log(setupOutput);
+        return false;
+      }
+    } catch (error) {
+      spinner.warn('Database setup encountered issues');
+      console.log(chalk.yellow('\nDatabase setup output:'));
+      console.log(error.stdout || error.message);
+      console.log(chalk.yellow('\nThe application will still work with basic authentication.'));
+      console.log(chalk.yellow('Run "python3 scripts/setup-database.py" manually to complete setup.'));
+      return false;
+    }
+  } catch (error) {
+    spinner.fail('Database setup failed');
+    console.log(chalk.red('Error:', error.message));
+    return false;
+  }
+}
+
 async function setupGitHooks() {
   const spinner = ora('Setting up Git hooks...').start();
 
@@ -93,7 +151,6 @@ async function setupGitHooks() {
     // Create .husky directory and pre-commit hook
     const huskyDir = join(rootDir, '.husky');
     if (!existsSync(huskyDir)) {
-      const { execSync } = await import('child_process');
       execSync('npx husky install', { cwd: rootDir });
       
       const preCommitHook = `#!/usr/bin/env sh
@@ -113,7 +170,6 @@ async function installDependencies() {
   const spinner = ora('Installing dependencies...').start();
   
   try {
-    const { execSync } = await import('child_process');
     execSync('npm install', { cwd: rootDir, stdio: 'inherit' });
     spinner.succeed('Dependencies installed');
   } catch (error) {
@@ -128,15 +184,20 @@ async function main() {
     await createEnvFiles();
     await setupGitHooks();
     await installDependencies();
+    
+    const databaseSetupSuccess = await setupDatabase();
 
     console.log(chalk.green.bold(`
 ✅ Setup Complete!
 ==================
 
 Next steps:
-1. Run ${chalk.cyan('npm run dev')} to start the development servers
+1. ${databaseSetupSuccess ? '' : 'Complete database setup (see output above), then '}Run ${chalk.cyan('npm run dev')} to start the development servers
 2. Visit ${chalk.cyan('http://localhost:5173')} to see your app
 3. Sign up with the admin email: ${chalk.cyan(process.env.ADMIN_EMAIL)}
+
+${databaseSetupSuccess ? '' : chalk.yellow('Note: Database setup needs completion. Check the output above for instructions.\n')}
+API Documentation: ${chalk.cyan('http://localhost:8000/api/docs')}
 
 Optional:
 - Set up Stripe (see SETUP_HUMAN_TASKS.md)

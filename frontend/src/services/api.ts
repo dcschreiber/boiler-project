@@ -19,13 +19,22 @@ api.interceptors.request.use(async (config) => {
   return config
 })
 
-// Handle errors
+// Handle errors more intelligently
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid, sign out
-      supabase.auth.signOut()
+      // Check if we actually have a session - if we do, this might be a backend issue
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      // Only sign out if we don't have a valid session
+      if (!session?.access_token) {
+        console.log('No valid session found, signing out')
+        supabase.auth.signOut()
+      } else {
+        // We have a session but got 401 - likely a backend issue, don't sign out
+        console.log('Got 401 but have valid session, not signing out. Error:', error.response?.data)
+      }
     }
     return Promise.reject(error)
   }

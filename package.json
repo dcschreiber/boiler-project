@@ -21,6 +21,8 @@
     "setup": "node scripts/setup-enhanced.js",
     "setup:basic": "node scripts/setup.js",
     "setup:prerequisites": "bash scripts/install-prerequisites.sh",
+    "setup:database": "python3 scripts/setup-database.py",
+    "check:database": "python3 scripts/simple-db-check.py",
     "validate-env": "node scripts/validate-env.js",
     "postinstall": "node scripts/post-install.js",
     "prepare": "husky install"

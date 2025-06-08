@@ -30,6 +30,8 @@
 
 ### 5. **Frontend Polish** ✨
 - [ ] LoginPage labels should be visible (currently sr-only)
+- [ ] Password change option
+- [ ] Admin doens't have options to add users to the whitelist
 
 ## 🏗️ **Code Quality & Architecture**
 

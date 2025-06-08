@@ -289,6 +289,10 @@ npm run dev              # Start all services
 npm run dev:frontend     # Frontend only
 npm run dev:backend      # Backend only
 
+# Database
+npm run setup:database   # Create database tables
+npm run check:database   # Check database status
+
 # Testing
 npm test                 # Run all tests
 npm run test:coverage    # With coverage
@@ -302,7 +306,8 @@ npm run build           # Build for production
 npm run deploy          # Deploy to Cloud Run
 
 # Utilities
-npm run setup           # Validate setup
+npm run setup           # Complete setup with database
+npm run setup:basic     # Setup without database
 npm run validate-env    # Check env vars
 ```
 
