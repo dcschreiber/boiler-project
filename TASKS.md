@@ -20,6 +20,7 @@
 - [ ] Double check we don't have duplicates in the setup script and that it all runs like magic
 - [ ] Review if triple browser testing (Chrome, Firefox, WebKit) is necessary
 - [ ] Docker environment variable handling optimization
+- [ ] Make the setup feel like magic, with an init / set up / run commands - other commands like DB setup should be built into those.
 
 ### 4. **Internationalization (i18n)** 🌍
 - [ ] RTL (Right-to-Left) language support
